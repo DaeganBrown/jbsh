@@ -116,8 +116,22 @@ int main()
             left = argv;
             right = &argv[pipe_i + 1];
         }
-        
-        if (fork() == 0) // Child process
+        if (argc > 0 && strcmp(argv[0], "cd") == 0)
+        {
+            const char* path = nullptr;
+            if (argc < 2 || argv[1] == nullptr) 
+            {
+                path = getenv("HOME");
+                if (!path) 
+                    path = "/";
+            } 
+            else 
+                path = argv[1];
+            if (chdir(path) != 0) 
+                perror("cd");
+            continue; 
+        }
+        else if (fork() == 0) // Child process
         {
             if (pipe_i == -1 && redir_i == -1) // Regular
                 execvp(argv[0], argv);
